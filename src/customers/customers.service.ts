@@ -18,7 +18,7 @@ export class CustomersService {
           required: true,
         },
       ],
-    }); // Inclui ordens
+    });
   }
 
   async findOne(id: number): Promise<Customer> {
