@@ -1,37 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/core';
+import { InjectModel } from '@nestjs/sequelize';
 import { Order } from './entities/order.entity';
+import { Customer } from '../customers/entities/customer.entity';
 
 @Injectable()
 export class OrdersService {
   constructor(
-    @InjectRepository(Order)
-    private readonly orderRepository: EntityRepository<Order>,
+    @InjectModel(Order)
+    private readonly orderModel: typeof Order,
   ) {}
 
-  create(orderData: Partial<Order>): Promise<Order> {
-    const order = this.orderRepository.create(orderData);
-    return this.orderRepository.insert(order).then(() => order);
+  async findAll(): Promise<Order[]> {
+    return this.orderModel.findAll({ include: [Customer] }); // Inclui clientes
   }
 
-  findAll(): Promise<Order[]> {
-    return this.orderRepository.findAll({ populate: ['customer'] });
+  async findOne(id: number): Promise<Order> {
+    return this.orderModel.findByPk(id, { include: [Customer] });
   }
 
-  findOne(id: number): Promise<Order> {
-    return this.orderRepository.findOneOrFail(id, { populate: ['customer'] });
+  async create(orderData: Partial<Order>): Promise<Order> {
+    return this.orderModel.create(orderData);
   }
 
-  async update(id: number, orderData: Partial<Order>): Promise<Order> {
-    const order = await this.findOne(id);
-    this.orderRepository.assign(order, orderData);
-    await this.orderRepository.insert(order);
-    return order;
-  }
-
-  async remove(id: number): Promise<void> {
-    const order = await this.findOne(id);
-    await this.orderRepository.nativeDelete(order);
-  }
+  // Outros métodos...
 }

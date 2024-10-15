@@ -1,17 +1,15 @@
-import { Entity, PrimaryKey, Property, ManyToOne } from '@mikro-orm/core';
 import { Customer } from '../../customers/entities/customer.entity';
+import { Column, ForeignKey, Model, Table } from 'sequelize-typescript';
 
-@Entity()
-export class Order {
-  @PrimaryKey()
-  id: number;
-
-  @Property()
+@Table({ tableName: 'order', timestamps: false })
+export class Order extends Model<Order> {
+  @Column
   item: string;
 
-  @Property()
+  @Column
   price: number;
 
-  @ManyToOne(() => Customer)
-  customer: Customer;
+  @ForeignKey(() => Customer)
+  @Column({ field: 'customer_id' })
+  customerId: number;
 }

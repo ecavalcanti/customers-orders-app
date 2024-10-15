@@ -1,23 +1,14 @@
-import {
-  Entity,
-  PrimaryKey,
-  Property,
-  OneToMany,
-  Collection,
-} from '@mikro-orm/core';
+import { Column, Model, Table, HasMany } from 'sequelize-typescript';
 import { Order } from '../../orders/entities/order.entity';
 
-@Entity()
-export class Customer {
-  @PrimaryKey()
-  id: number;
-
-  @Property()
+@Table({ tableName: 'customer', timestamps: false })
+export class Customer extends Model<Customer> {
+  @Column
   name: string;
 
-  @Property()
+  @Column
   email: string;
 
-  @OneToMany(() => Order, (order) => order.customer)
-  orders = new Collection<Order>(this);
+  @HasMany(() => Order)
+  orders: Order[];
 }
